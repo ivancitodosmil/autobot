@@ -80,7 +80,7 @@ const WelcomeScreen: React.FC<{
     <div className="relative z-10 flex flex-col items-center justify-center h-full p-4 sm:p-6 md:p-8 text-center animate-fadeIn">
       <AutobotLogo className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 mb-4 text-primary" />
       <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-wider">AUTOBOT</h1>
-      <p className="mt-2 text-md sm:text-lg lg:text-xl text-gray-400">Tu Asistente Experto en Motores</p>
+      <p className="mt-2 text-md sm:text-lg lg:text-xl text-gray-400">Tu Asistente Experto en Motores Vehiculares</p>
       <p className="mt-6 sm:mt-8 mb-6 max-w-md lg:max-w-xl text-gray-300 text-base lg:text-lg">
         ¡Hola! Soy Autobot. Selecciona un tema para comenzar o haz tu pregunta directamente.
       </p>
