@@ -1,0 +1,182 @@
+{
+  "titulo": "Guía Completa de Mantenimiento Preventivo de Motores",
+  "version": "1.0",
+  "vehiculos": [
+    {
+      "tipo": "automovil",
+      "subtipos": [
+        "sedan",
+        "hatchback",
+        "suv",
+        "deportivos"
+      ],
+      "mantenimiento_general": {
+        "intervalos_km": {
+          "5000": "Cambio de aceite y revisión de niveles.",
+          "10000": "Cambio de filtro de aceite, inspección de frenos, rotación de llantas.",
+          "20000": "Cambio filtro de aire, limpieza de cuerpo de aceleración.",
+          "30000": "Revisión de bujías, correas auxiliares y refrigerante.",
+          "50000": "Cambio de bujías, filtro de combustible, revisión de bomba de agua.",
+          "80000": "Revisión completa del sistema de distribución (correa o cadena).",
+          "100000": "Overhaul preventivo básico del motor."
+        },
+        "recomendaciones_especiales": [
+          "Evitar acelerar en frío.",
+          "Revisar fugas cada 15 días.",
+          "Monitorear ruidos anormales en ralentí."
+        ]
+      },
+      "sistemas": {
+        "lubricacion": {
+          "descripcion": "Sistema encargado de reducir la fricción entre las piezas internas del motor.",
+          "componentes": ["Aceite del motor", "Bomba de aceite", "Cárter", "Filtro de aceite"],
+          "fallas_comunes": [
+            {
+              "nombre": "Bajo nivel de aceite",
+              "sintomas": ["Luz de presión de aceite encendida", "Ruidos metálicos"],
+              "causas": ["Fugas", "Desgaste del motor", "Consumo excesivo"],
+              "soluciones": ["Rellenar aceite", "Reparar fugas", "Reemplazar retenes"]
+            },
+            {
+              "nombre": "Aceite degradado",
+              "sintomas": ["Color oscuro", "Olor a quemado"],
+              "causas": ["Exceso de kilometraje", "Mala calidad del aceite"],
+              "soluciones": ["Realizar cambio inmediato del aceite y filtro"]
+            }
+          ],
+          "tipos_aceite": {
+            "5W30": "Recomendado para la mayoría de autos modernos.",
+            "10W40": "Para motores con mayor kilometraje.",
+            "0W20": "Alta eficiencia en autos híbridos y nuevos."
+          }
+        },
+        "combustion": {
+          "descripcion": "Sistema donde se mezcla aire y combustible para generar energía.",
+          "componentes": ["Inyectores", "Bujías", "Cuerpo de aceleración", "Sensor MAP/MAF"],
+          "fallas_comunes": [
+            {
+              "nombre": "Inyectores sucios",
+              "sintomas": ["Pérdida de potencia", "Vibraciones", "Alto consumo"],
+              "causas": ["Gasolina de mala calidad", "Falta de mantenimiento"],
+              "soluciones": ["Limpieza por ultrasonido", "Cambio de filtro de combustible"]
+            },
+            {
+              "nombre": "Bujías desgastadas",
+              "sintomas": ["Encendido dificultoso", "Explosiones en el escape"],
+              "causas": ["Exceso de kilometraje"],
+              "soluciones": ["Reemplazo de bujías"]
+            }
+          ]
+        },
+        "refrigeracion": {
+          "descripcion": "Sistema encargado de mantener una temperatura adecuada en el motor.",
+          "componentes": ["Radiador", "Termostato", "Bomba de agua", "Refrigerante"],
+          "fallas_comunes": [
+            {
+              "nombre": "Sobrecalentamiento",
+              "sintomas": ["Aumento de temperatura", "Vapor en el capó"],
+              "causas": ["Fuga de refrigerante", "Termostato trabado"],
+              "soluciones": ["Reemplazar termostato", "Reparar fugas", "Purgar sistema"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "tipo": "motocicleta",
+      "subtipos": ["Scooter", "Sport", "Enduro", "Touring"],
+      "mantenimiento_general": {
+        "intervalos_km": {
+          "3000": "Cambio de aceite.",
+          "6000": "Cambio de filtro de aire, calibración de válvulas.",
+          "12000": "Cambio de bujías y revisión de carburador o inyección."
+        }
+      },
+      "sistemas": {
+        "lubricacion": {
+          "descripcion": "Las motos requieren cambios de aceite más frecuentes por su mayor temperatura de operación.",
+          "tipos_aceite": {
+            "20W50": "Para motos de trabajo o altas temperaturas.",
+            "10W40": "Universal para mayoría de motos modernas."
+          }
+        },
+        "transmision": {
+          "descripcion": "Conjunto que transfiere el movimiento del motor a la rueda trasera.",
+          "componentes": ["Cadena", "Piñón", "Catalina"],
+          "mantenimiento": [
+            "Lubricación de cadena cada 500 km.",
+            "Ajustar tensión adecuada.",
+            "Reemplazar kit cada 20–25k km."
+          ]
+        }
+      }
+    },
+    {
+      "tipo": "bus",
+      "subtipos": ["Interprovincial", "Urbano", "Turismo"],
+      "mantenimiento_general": {
+        "intervalos_km": {
+          "7000": "Cambio de aceite y filtros.",
+          "15000": "Revisión completa del sistema de frenos neumáticos.",
+          "30000": "Revisión de inyectores, líneas de alta presión y turbo.",
+          "50000": "Ajuste de válvulas, inspección de bancada y bielas."
+        },
+        "recomendaciones_especiales": [
+          "Monitoreo diario del nivel de aceite debido al tamaño del motor.",
+          "Revisión constante del sistema de aire.",
+          "Control del desgaste del embrague."
+        ]
+      },
+      "sistemas": {
+        "turbo": {
+          "descripcion": "Los buses equipados con turbocompresor requieren inspección frecuente por el estrés térmico.",
+          "fallas_comunes": [
+            {
+              "nombre": "Turbo quemado",
+              "sintomas": ["Humo azul", "Pérdida total de potencia"],
+              "causas": ["Falta de lubricación", "Apagar motor inmediatamente después de una subida prolongada"],
+              "soluciones": ["Reemplazar turbo", "Revisar alimentación de aceite"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "tipo": "camioneta",
+      "subtipos": ["4x2", "4x4", "Diesel", "Gasolina"],
+      "mantenimiento_general": {
+        "intervalos_km": {
+          "5000": "Aceite y revisión de suspensión.",
+          "15000": "Revisión de 4x4, retenes y transmisión.",
+          "30000": "Cambio filtro de combustible (especial en diésel)."
+        }
+      },
+      "sistemas": {
+        "inyeccion_diesel": {
+          "descripcion": "Sistema delicado que requiere combustible de buena calidad.",
+          "fallas_comunes": [
+            {
+              "nombre": "Bomba de alta dañada",
+              "sintomas": ["Arranque difícil", "Pérdida de potencia"],
+              "causas": ["Diésel sucio", "Agua en el combustible"],
+              "soluciones": ["Cambio de bomba", "Purgar sistema"]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "errores_comunes_usuario": [
+    "Acelerar en frío constantemente",
+    "No respetar los cambios de aceite",
+    "Usar refrigerante mezclado con agua de grifo",
+    "Ignorar ruidos metálicos",
+    "Esperar a que el motor falle para hacer mantenimiento"
+  ],
+  "glosario": {
+    "ralenti": "Velocidad mínima de funcionamiento del motor sin acelerar.",
+    "detonacion": "Explosión anormal dentro del cilindro.",
+    "mezcla_pobre": "Insuficiente cantidad de combustible respecto al aire.",
+    "mezcla_rica": "Exceso de combustible respecto al aire."
+  }
+}

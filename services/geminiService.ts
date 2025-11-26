@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message, Topic } from '../types';
+import mantenimientoData from '../data/mantenimiento_motor.json';
+
 
 const API_KEY = process.env.API_KEY;
 
@@ -11,110 +13,205 @@ const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 const model = ai.models;
 
-// *** INSTRUCCIÓN DEL SISTEMA (MODIFICADA: AÑADE FEEDBACK SOLO PARA CUSTOM) ***
+// *** INSTRUCCIÓN DEL SISTEMA MEJORADA ***
 const getSystemInstruction = (topic: Topic) => {
     let customInstruction = '';
     
-    // AÑADE LA INSTRUCCIÓN DE FEEDBACK SOLO SI EL TÓPICO ES CUSTOM
     if (topic === Topic.CUSTOM) {
-        customInstruction = '\n\nDespués de responder a la pregunta abierta del usuario, **DEBES** incluir la siguiente frase al final de tu respuesta para solicitar feedback:\n\n**¿Te ha sido útil esta información? Si no fue así, por favor, reformula tu pregunta para que pueda ayudarte mejor.**';
+        customInstruction = '\n\n**Al finalizar tu respuesta, DEBES incluir:**\n\n💬 **¿Te ha sido útil esta información? Si no, reformula tu pregunta para ayudarte mejor.**';
     }
 
     return `
-You are "Autobot", a friendly, professional, and educational chatbot specializing in preventive vehicle maintenance. Your name is Autobot. You MUST respond in Spanish. Use markdown for formatting. Keep responses concise and focused.
+You are "Autobot" 🤖, a friendly, enthusiastic, and professional chatbot EXCLUSIVELY specialized in PREVENTIVE MAINTENANCE OF VEHICLE ENGINES. You MUST respond in Spanish.
 
-Current Conversation Topic: "${topic}"
+⚠️ **RESTRICCIÓN ABSOLUTA:** SOLO mantenimiento preventivo del motor. Si preguntan sobre reparaciones u otros sistemas del vehículo, redirige amablemente: "🤖 Soy **Autobot**, experto en **mantenimiento preventivo del motor**. Solo puedo ayudarte con aceite, refrigerante, filtros y cuidado general del motor. ¿Tienes alguna pregunta sobre estos temas?"
 
-Your task is to respond to the user's message based on the current topic.
+**🎯 MANEJO DE FEEDBACK (MUY IMPORTANTE):**
 
-Here are your strict instructions for each topic (Solo aplica para las continuaciones del diálogo, después de la primera respuesta):
-- **${Topic.GREETING}**: This is the initial state. You've already greeted the user. Wait for their selection.
-- **${Topic.BASIC_CHECK}**: **Ya has iniciado la guía de revisión de aceite.** Tu tarea es simplemente responder a la pregunta del usuario sobre el nivel de aceite y continuar la guía (ej. si está bajo, sugerir rellenar; si está bien, preguntar por el refrigerante, etc.).
-- **${Topic.ALERTS}**: **Ya has proporcionado la lista de alertas.** Tu tarea es responder a la consulta del usuario, dándole una causa probable y una recomendación de acción INMEDIATA. Manten siempre un tono de urgencia y seguridad ("visita un mecánico profesional").
-- **${Topic.REMINDERS}**: **Ya proporcionaste el consejo de cambio de aceite y mantenimiento general.** Tu tarea es responder a cualquier pregunta de seguimiento del usuario sobre ese tema o cualquier otra consulta sobre programas de mantenimiento general.
-- **${Topic.TIPS}**: **Ya has proporcionado los tips iniciales al usuario.** Tu tarea es responder a cualquier pregunta de seguimiento del usuario sobre esos tips o cualquier otra consulta general sobre el cuidado del motor.
-- **${Topic.CUSTOM}**: Answer the user's open-ended question directly and helpfully.
+Si el usuario responde afirmativamente al feedback (Sí, Si, Yes, Claro, Exacto, Por supuesto, Perfecto, Genial, Excelente, etc.):
+- Agradece brevemente y despídete de forma amigable
+- Ejemplo: "¡Excelente! 🎉 Me alegra haberte ayudado. Recuerda que el mantenimiento preventivo es clave para un motor saludable. ¡Hasta pronto! 🚗✨"
+- NO ofrezcas más opciones ni continúes la conversación
+- Es una DESPEDIDA FINAL
 
-**REGLA DE FORMATO ESTRICTA:** **ESTRICTAMENTE NO DEBES utilizar comillas simples (backticks: \` \`)** para destacar nombres de tópicos o frases. Utiliza **negritas (** **) ** en su lugar para mantener un tono amigable.
+Si el usuario responde negativamente al feedback (No, No gracias, Nop, No me sirvió, No mucho, etc.):
+- Ofrece reformular o aclarar la información
+- Da 2-3 recomendaciones breves sobre qué puede hacer
+- Despídete invitándolo a volver cuando necesite
+- Ejemplo: "Entiendo. Si necesitas más claridad, intenta ser más específico en tu pregunta. También puedes:
+  🔧 Revisar el manual de tu vehículo
+  💡 Consultar con un mecánico de confianza
+  📱 Regresar cuando tengas otra duda
+¡Estoy aquí para ayudarte! Hasta pronto 👋"
+- Es una DESPEDIDA FINAL
 
-If a user asks something outside of vehicle maintenance, politely steer them back to your purpose.
+**ESTILO DE RESPUESTA:**
+✅ Usa emojis relevantes (🔧 🛢️ 💧 🔥 ⚡ 🚗 ✨ 💡 🎯 📋 ⚙️ 🧊 👀 📈 🛡️ 🌡️ 🅿️ 🔴 🟡 🟢 🟤)
+✅ Markdown: **negritas**, listas (NUNCA uses títulos con ###)
+✅ NUNCA uses comillas simples (backticks: \`)
+✅ NUNCA uses líneas horizontales (----------)
+✅ Respuestas concisas, máximo 10-12 líneas (excepto respuestas iniciales)
+✅ Tono amigable, educativo y motivador
+
+**Tópico Actual:** "${topic}"
+
+**Instrucciones por Tópico (después de la primera respuesta):**
+
+🔹 **${Topic.GREETING}**: Ya saludaste. Espera su selección.
+
+🔹 **${Topic.BASIC_CHECK}**: Ya iniciaste la guía de revisión de aceite. Responde sobre el nivel y continúa la guía (si está bajo, sugerir rellenar; si está bien, preguntar por refrigerante, etc.).
+
+🔹 **${Topic.ALERTS}**: Ya diste la lista de alertas. Responde con causa probable y acción INMEDIATA. Mantén tono de urgencia y seguridad ("consulta un mecánico profesional de inmediato").
+
+🔹 **${Topic.REMINDERS}**: Ya diste el programa de mantenimiento. Responde preguntas de seguimiento sobre intervalos, frecuencias y programas de mantenimiento preventivo del motor.
+
+🔹 **${Topic.TIPS}**: Ya diste los tips iniciales. Responde preguntas de seguimiento sobre esos tips o consultas sobre cuidado preventivo del motor.
+
+🔹 **${Topic.CUSTOM}**: Responde la pregunta abierta del usuario de manera directa y útil, SOLO si está relacionada con mantenimiento preventivo del motor.
+
 ${customInstruction}
 `;
 };
 
-// *** RESPUESTAS INICIALES QUEMADAS (SIN CAMBIOS) ***
+// *** RESPUESTAS INICIALES OPTIMIZADAS ***
 const getInitialResponse = (topic: Topic): string | null => {
     switch (topic) {
         case Topic.BASIC_CHECK:
-            return `¡Excelente elección! La **"Revisión Básica del Motor"** es fundamental para la salud de tu vehículo.
-Comencemos con el **aceite del motor**, que es la sangre de tu coche.
+            return `🔧 **Revisión Básica del Motor**
 
-1. Asegúrate de que el vehículo esté en una **superficie plana** y el motor **apagado y frío** (al menos 15-20 minutos después de haberlo usado).
-2. Localiza la **varilla medidora del aceite** (suele tener un mango de color brillante, como amarillo o naranja).
-3. Sácala, límpiala con un paño o papel, e insértala de nuevo hasta el fondo.
-4. Retírala nuevamente y observa el nivel del aceite.
+¡Perfecto! Comencemos con **el aceite del motor** 🛢️, la sangre vital de tu vehículo.
 
-**¿El nivel de aceite está entre las marcas de "Mín" y "Máx" en la varilla?**`;
+**Pasos para revisar el aceite:**
+
+**1.** Estaciona en superficie plana 🅿️
+
+**2.** Motor apagado y frío (espera 15-20 min) 🛑
+
+**3.** Localiza la varilla medidora (mango amarillo/naranja) 🔍
+
+**4.** Sácala, límpiala, insértala hasta el fondo 🧹
+
+**5.** Retírala y observa el nivel 👀
+
+**¿El nivel está entre "Mín" y "Máx"?** Cuéntame qué ves 💬`;
 
         case Topic.REMINDERS:
-            return `¡Un buen programa de **Mantenimiento del Motor** es vital! Aquí tienes un resumen de las tareas más importantes:
+            return `📋 **Programa de Mantenimiento Preventivo**
 
-### ⚙️ Mantenimiento Esencial
+¡Genial! Aquí está tu calendario esencial para un motor saludable 🚗✨
 
-1.  **Cambio de Aceite y Filtro:**
-    * **Aceite Convencional/Mineral:** Cámbialo cada **5,000 km** o 6 meses.
-    * **Aceite Semisintético:** Cámbialo cada **8,000 km** o 9 meses.
-    * **Aceite Sintético:** Cámbialo cada **10,000 a 15,000 km** o 1 año.
-    * *Sigue siempre las indicaciones exactas del manual de tu vehículo.*
+🛢️ **Cambio de Aceite y Filtro**
 
-2.  **Filtro de Aire del Motor:**
-    * Generalmente se cambia cada **20,000 km** o 1 año. Un filtro limpio asegura un flujo de aire adecuado y una mejor eficiencia.
+**🟤 Mineral:** Cada **5,000 km** o 6 meses
 
-3.  **Revisión de Líquidos:**
-    * Mensualmente, verifica el nivel de **refrigerante** (¡solo con motor frío!) y el **líquido de frenos**.
+**🟡 Semisintético:** Cada **8,000 km** o 9 meses
 
-4.  **Revisión de Neumáticos:**
-    * Revisa la presión de inflado semanalmente y realiza la **rotación de neumáticos** cada **10,000 km** para asegurar un desgaste uniforme.
+**🟢 Sintético:** Cada **10,000-15,000 km** o 1 año
 
-¿Tienes alguna otra pregunta sobre el calendario de mantenimiento o deseas saber más detalles de alguna de estas revisiones?`;
+💡 *Siempre consulta el manual de tu vehículo*
+
+🌬️ **Filtro de Aire**
+
+Cada **20,000 km** o 1 año (mejor flujo = mejor rendimiento)
+
+💧 **Revisión Mensual de Líquidos**
+
+✅ Refrigerante (motor frío) 🧊
+✅ Líquido de frenos 🔴
+✅ Nivel de aceite 🛢️
+
+🔧 **Cada 10,000 km**
+
+✅ Mangueras y correas
+✅ Bujías
+✅ Sistema de enfriamiento
+
+¿Dudas sobre algún mantenimiento? 🤔`;
             
         case Topic.TIPS:
-            // Respuesta de Tips de Cuidado - CON EMOJIS (Como en tu código)
-            return `¡Buena Iniciativa! Los **Tips de Cuidado** 🛡️ son la clave para prolongar la vida útil de tu motor y mantener tu vehículo en excelente estado.
+            return `🛡️ **Tips de Cuidado Preventivo del Motor**
 
-Aquí tienes 5 tips esenciales para comenzar:
+¡Fantástico! Estos consejos prolongarán la vida de tu motor 💪
 
-1.  **🚗 Respeta los Tiempos de Calentamiento:** No aceleres bruscamente apenas enciendas el motor. Deja que el aceite circule y alcance la temperatura de operación óptima (unos 30-60 segundos es suficiente).
-2.  **💧 Usa el Aceite Correcto:** Siempre utiliza el tipo de aceite (sintético, semisintético, y viscosidad) recomendado por el fabricante de tu vehículo. Esto reduce la fricción y el desgaste.
-3.  **🧊 No Fuerces el Motor en Frío:** Evita llevar las RPM al límite hasta que el indicador de temperatura del motor haya alcanzado su nivel normal.
-4.  **📈 Revisa tus Fluidos Regularmente:** Acostúmbrate a revisar el nivel de aceite, refrigerante y otros fluidos al menos una vez al mes. La falta de fluidos es una causa principal de fallas graves.
-5.  **👂 Presta Atención a los Ruidos:** Cualquier ruido inusual (golpeteo, chillidos, silbidos) es una señal de que algo necesita atención. Ignorarlos puede convertir un problema menor en una reparación costosa.
+**1️⃣ Calentamiento Suave 🚗**
 
-¿Tienes alguna pregunta específica sobre alguno de estos tips o deseas más información sobre un aspecto particular del cuidado del motor?`;
+No aceleres bruscamente al encender. 30-60 segundos es suficiente.
+
+**2️⃣ Aceite Correcto 🛢️**
+
+Usa el tipo y viscosidad recomendados por el fabricante. Reduce fricción y desgaste.
+
+**3️⃣ No Fuerces en Frío 🧊**
+
+Evita altas RPM hasta que el motor alcance temperatura normal 🌡️
+
+**4️⃣ Revisa Fluidos Mensualmente 💧**
+
+Aceite, refrigerante y líquido de frenos. La prevención es clave ⚠️
+
+**5️⃣ Escucha a tu Motor 👂**
+
+Golpeteos, chillidos o silbidos son señales de alerta 🚨
+
+Un problema pequeño ignorado = reparación costosa 💸
+
+¿Quieres profundizar en algún tip? 🎯`;
 
         case Topic.ALERTS:
-            // Respuesta de Señales de Alerta - CON EMOJIS (Tabla original)
-            return `🚨 ¡ATENCIÓN! Si tu motor presenta alguna de estas señales, es crucial actuar de inmediato para prevenir daños graves.
+            return `🚨 **Señales de Alerta del Motor**
 
-| Señal de Alerta | Posible Causa y Acción Inmediata | Urgencia |
-| :--- | :--- | :--- |
-| **Luz de Aceite Encendida** 💡 | **Falta de presión/nivel de aceite.** Detén el motor *inmediatamente* de forma segura para evitar la destrucción del motor. | **¡MÁXIMA!** 🛑 |
-| **Humo Azul/Grisáceo** 💨 | **Quema de aceite** (problemas de sellos o anillos). Requiere revisión profesional urgente. | **ALTA** ⚠️ |
-| **Humo Blanco Excesivo** ☁️ | **Quema de refrigerante/agua.** Posible junta de culata dañada. Detén el vehículo y apaga el motor para evitar daños por calor. | **ALTA** ⚠️ |
-| **Ruido de Golpeteo Fuerte** 🔨 | **Fallo interno mayor** (bielas, pistones). No uses el vehículo. Llama a una grúa. | **¡MÁXIMA!** 🛑 |
-| **Motor se Sobrecalienta** 🔥 | **Falla del sistema de enfriamiento.** Detén el vehículo y apaga el motor para evitar daños por calor. | **¡MÁXIMA!** 🛑 |
+¡Atención! Estas señales requieren acción inmediata:
 
-Si experimentas una alerta, por favor, **escribe el síntoma específico** que estás viendo (ej. "sale humo azul") y te diré qué hacer.`;
+🔴 **URGENCIA MÁXIMA** 🛑
+
+**💡 Luz de Aceite Encendida**
+
+Falta de presión/nivel. **Detén el motor YA** o lo destruirás.
+
+**🔥 Sobrecalentamiento**
+
+Falla del enfriamiento. **Detén y apaga el motor ahora.**
+
+**🔨 Golpeteo Fuerte**
+
+Fallo interno mayor. **NO lo uses. Llama grúa.**
+
+🟡 **URGENCIA ALTA** ⚠️
+
+**💨 Humo Azul/Grisáceo**
+
+Quema de aceite. Revisión profesional urgente.
+
+**☁️ Humo Blanco Excesivo**
+
+Quema de refrigerante. Posible junta dañada. Detén el vehículo.
+
+**💡 Check Engine Encendido**
+
+La computadora detectó una falla. No ignores esta señal.
+
+**📉 Pérdida de Potencia**
+
+Filtros sucios o bujías gastadas afectan la combustión.
+
+**👃 Olores Raros**
+
+Aceite quemado, gasolina o dulce (refrigerante). Algo no está bien.
+
+**¿Qué síntoma estás viendo?** Escríbelo y te diré qué hacer 💬`;
 
         default:
             return null; 
     }
 }
+function getJSONInfo() {
+    return JSON.stringify(mantenimientoData);
+}
 
-// *** FUNCIÓN PRINCIPAL (SIN CAMBIOS) ***
+// *** FUNCIÓN PRINCIPAL ***
 export const getBotResponse = async (history: Message[], newUserMessage: Message, topic: Topic): Promise<string> => {
     
-    // 1. MANEJO DE RESPUESTA INICIAL QUEMADA
+    // 1. MANEJO DE RESPUESTA INICIAL
     if (history.length === 0) {
         const initialResponse = getInitialResponse(topic);
         if (initialResponse) {
@@ -128,27 +225,29 @@ export const getBotResponse = async (history: Message[], newUserMessage: Message
     const geminiModel = topic === Topic.ALERTS ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
 
     const contents = history.map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }],
-    }));
+        role: msg.sender === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }],
+    }));
 
-    // Agregar el mensaje del usuario para la API
-    contents.push({
-        role: 'user',
-        parts: [{ text: cleanedUserMessageText }],
-    });
+    contents.push({
+        role: 'user',
+        parts: [{ text: cleanedUserMessageText }],
+    });
 
-    try {
-        const response = await model.generateContent({
-            model: geminiModel,
-            contents: contents,
-            config: {
-                systemInstruction: getSystemInstruction(topic),
-            }
-        });
-        return response.text;
-    } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        return "Lo siento, estoy teniendo problemas para conectarme. Por favor, inténtalo de nuevo más tarde.";
-    }
+    try {
+        const response = await model.generateContent({
+            model: geminiModel,
+            contents: contents,
+            config: {
+                systemInstruction: 
+                     (topic === Topic.CUSTOM ? getJSONInfo() + "\n\n" : "") 
+                     + getSystemInstruction(topic),
+
+            }
+        });
+        return response.text;
+    } catch (error) {
+        console.error("Error calling Gemini API:", error);
+        return "🤖 Lo siento, tengo problemas para conectarme. Inténtalo de nuevo más tarde 🔄";
+    }
 };
